@@ -293,19 +293,10 @@ pub struct RedisSession {
     pub table_state: TableState,
     pub viewing_key: Option<String>,
     pub viewing_key_scroll: u16,
-    pub loading: bool,
 }
 
 impl RedisSession {
     fn get_next(&mut self) -> Result<(), redis::RedisError> {
-        if self.loading {
-            return Ok(());
-        }
-        self.loading = true;
-
-        std::thread::spawn(|| {
-        });
-
         // Do a SCAN command
         let result: RedisResult<(u64, Vec<String>)> = redis::cmd("SCAN")
             .cursor_arg(self.cursor)
