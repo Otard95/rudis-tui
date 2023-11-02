@@ -235,27 +235,30 @@ impl KeyMetadata {
     pub fn ttl_as_human_delta(&self) -> String {
         match self.ttl {
             Some(ttl) => {
-                let minute_threshold = 50;
-                let hour_threshold = 50 * 60;
-                let day_threshold = 23 * 60 * 60;
-                let week_threshold = 6 * 24 * 60 * 60;
-                let month_threshold = 4 * 7 * 24 * 60 * 60;
-                let year_threshold = 12 * 30 * 24 * 60 * 60;
+                let minute = 60.0;
+                let hour = minute * 60.0;
+                let day = hour * 24.0;
+                let week = day * 7.0;
+                let month = day * 30.0;
+                let year = day * 365.0;
+                let threshold_multiplier = 0.9;
 
-                if ttl > year_threshold {
-                    format!("{}y", ttl / year_threshold)
-                } else if ttl > month_threshold {
-                    format!("{}M", ttl / month_threshold)
-                } else if ttl > week_threshold {
-                    format!("{}w", ttl / week_threshold)
-                } else if ttl > day_threshold {
-                    format!("{}d", ttl / day_threshold)
-                } else if ttl > hour_threshold {
-                    format!("{}h", ttl / hour_threshold)
-                } else if ttl > minute_threshold {
-                    format!("{}m", ttl / minute_threshold)
+                let f_ttl = ttl as f64;
+
+                if f_ttl > (year as f64 * threshold_multiplier) {
+                    format!("{}y", f_ttl / year)
+                } else if f_ttl > (month * threshold_multiplier) {
+                    format!("{}M", f_ttl / month)
+                } else if f_ttl > (week * threshold_multiplier) {
+                    format!("{}w", f_ttl / week)
+                } else if f_ttl > (day * threshold_multiplier) {
+                    format!("{}d", f_ttl / day)
+                } else if f_ttl > (hour * threshold_multiplier) {
+                    format!("{}h", f_ttl / hour)
+                } else if f_ttl > (minute * threshold_multiplier) {
+                    format!("{}m", f_ttl / minute)
                 } else {
-                    format!("{}s", ttl)
+                    format!("{}s", f_ttl)
                 }
             }
             None => "N/A".to_string(),
